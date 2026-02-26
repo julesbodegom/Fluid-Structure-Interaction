@@ -18,7 +18,7 @@ Ndt   = 100;
 %   theta = 0   : first order explicit Euler
 %   theta = 1/2 : second order trapezoidal rule
 %   theta = 1   : first order implicit Euler
-theta = 0.0;
+theta = 1;
 
 % spatial discretization:
 % 
@@ -57,21 +57,24 @@ If = eye(2*N);
 W_seqsf = W0;
 L_seqsf = [ Is - dt*theta*As , zeros(2, 2*N)
            -dt*theta*Afs     , If - dt*theta*Af ];
-R_seqsf = L_seqsf + dt * A_mono;
+R_seqsf = [ Is + (1-theta)*dt*As,       dt*Asf;
+            (1-theta)*dt*Afs,           If + (1-theta)*dt*Af ];
 M_seqsf = inv(L_seqsf)*R_seqsf;
 
 % Partitioned sequential Fluid-Structure
 W_seqfs = W0;
 L_seqfs = [ Is - dt*theta*As , -dt*theta*Asf
             zeros(2*N, 2)    ,  If - dt*theta*Af ];
-R_seqfs = L_seqfs + dt * A_mono;
+R_seqfs = [ Is + (1-theta)*dt*As,      (1-theta)*dt*Asf;
+            dt*Afs,                    If + (1-theta)*dt*Af ];
 M_seqfs = inv(L_seqfs)*R_seqfs;
 
 % Partitioned parallel
 W_par = W0;
 L_par = [ Is - dt*theta*As , zeros(2, 2*N)
           zeros(2*N, 2)    , If - dt*theta*Af ];
-R_par = L_par + dt * A_mono;
+R_par = [ Is + (1-theta)*dt*As,        dt*Asf;
+          dt*Afs,                      If + (1-theta)*dt*Af ];
 M_par = inv(L_par)*R_par;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
