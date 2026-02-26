@@ -78,10 +78,10 @@ M_par = inv(L_par)*R_par;
 
 
 tvec = (0:Ndt)*dt;
-uvec = ones(5,1)*W0(1);
-qvec = ones(5,1)*W0(2);
-pvec = ones(5,1)*W0(N+2);
-evec = zeros(5,1);
+uvec = ones(3,1)*W0(1);
+qvec = ones(3,1)*W0(2);
+pvec = ones(3,1)*W0(N+2);
+evec = zeros(3,1);
 
 % Actual integration
 for i=1:Ndt
@@ -92,30 +92,22 @@ for i=1:Ndt
     W_seqfs = M_seqfs * W_seqfs;
     W_par   = M_par   * W_par;
     
-    uvec(:,i+1) = [W_exact(1)
-                   W_mono(1) 
+    uvec(:,i+1) = [W_mono(1) 
                    W_seqsf(1) 
-                   W_seqfs(1) 
-                   W_par(1)  ];
-    qvec(:,i+1) = [W_exact(2)
-                   W_mono(2) 
+                   W_seqfs(1) ];
+    qvec(:,i+1) = [W_mono(2) 
                    W_seqsf(2) 
-                   W_seqfs(2) 
-                   W_par(2)  ];
-    pvec(:,i+1) = [W_exact(N+2)
-                   W_mono(N+2) 
+                   W_seqfs(2) ];
+    pvec(:,i+1) = [W_mono(N+2) 
                    W_seqsf(N+2) 
-                   W_seqfs(N+2) 
-                   W_par(N+2)  ];
-    evec(:,i+1) = [0
-                   W_mono'  * E * W_mono  / E0 - 1
+                   W_seqfs(N+2) ];
+    evec(:,i+1) = [W_mono'  * E * W_mono  / E0 - 1
                    W_seqsf' * E * W_seqsf / E0 - 1
-                   W_seqfs' * E * W_seqfs / E0 - 1
-                   W_par'   * E * W_par   / E0 - 1 ];
+                   W_seqfs' * E * W_seqfs / E0 - 1 ];
 end
 
-showdata = [1 1 1 1 1];
-for i=1:5
+showdata = [1 1 1];
+for i=1:3
     qvec(i,:) = qvec(i,:)*showdata(i);
     uvec(i,:) = uvec(i,:)*showdata(i);
     pvec(i,:) = pvec(i,:)*showdata(i);
@@ -127,15 +119,16 @@ hold off
 title('Piston displacement');
 hold on
 plot(tvec,qvec);
-legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best');
+legend('Monolithic','Sequential S->F','Sequential F->S','Location','Best');
 xlabel('Time');
 ylabel('Piston displacement');
+ylim([-100 100]);
 figure(2)
 hold off
 title('Piston velocity');
 hold on
 plot(tvec,uvec);
-legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best');
+legend('Monolithic','Sequential S->F','Sequential F->S','Location','Best');
 xlabel('Time');
 ylabel('Piston velocity');
 figure(3)
@@ -143,7 +136,7 @@ hold off
 title('Pressure at piston');
 hold on
 plot(tvec,pvec);
-legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best');
+legend('Monolithic','Sequential S->F','Sequential F->S','Location','Best');
 xlabel('Time');
 ylabel('Interface pressure');
 figure(4)
@@ -151,6 +144,7 @@ hold off
 title('System energy change (E - E_{exact})/E_0');
 hold on
 plot(tvec,evec);
-legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best');
+legend('Monolithic','Sequential S->F','Sequential F->S','Location','Best');
 xlabel('Time');
 ylabel('System energy change');
+ylim([-1 100]);
