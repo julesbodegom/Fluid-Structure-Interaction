@@ -11,14 +11,14 @@ m = 2;
 k = 1;
 
 % Time step size and number of time steps
-dt    = 0.01;
-Ndt   = 1000;
+dt    = 0.1;
+Ndt   = 100;
 
 % Integration method:
 %   theta = 0   : first order explicit Euler
 %   theta = 1/2 : second order trapezoidal rule
 %   theta = 1   : first order implicit Euler
-theta = 1.0;
+theta = 0.0;
 
 % spatial discretization:
 % 
@@ -53,16 +53,14 @@ M_mono = inv(L_mono)*R_mono;
 Is = eye(2);
 If = eye(2*N);
 
-% Partitioned sequential Structure-Fluid (S -> F)
-% Structure is solved first (no implicit fluid feedback), then fluid
+% Partitioned sequential Structure-Fluid
 W_seqsf = W0;
 L_seqsf = [ Is - dt*theta*As , zeros(2, 2*N)
            -dt*theta*Afs     , If - dt*theta*Af ];
 R_seqsf = L_seqsf + dt * A_mono;
 M_seqsf = inv(L_seqsf)*R_seqsf;
 
-% Partitioned sequential Fluid-Structure (F -> S)
-% Fluid is solved first (no implicit structural feedback), then structure
+% Partitioned sequential Fluid-Structure
 W_seqfs = W0;
 L_seqfs = [ Is - dt*theta*As , -dt*theta*Asf
             zeros(2*N, 2)    ,  If - dt*theta*Af ];
@@ -70,7 +68,6 @@ R_seqfs = L_seqfs + dt * A_mono;
 M_seqfs = inv(L_seqfs)*R_seqfs;
 
 % Partitioned parallel
-% Both are solved using previous time step information for the coupling terms
 W_par = W0;
 L_par = [ Is - dt*theta*As , zeros(2, 2*N)
           zeros(2*N, 2)    , If - dt*theta*Af ];
