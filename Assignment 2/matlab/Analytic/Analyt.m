@@ -55,21 +55,18 @@ Mf(Nf,Nf) = dxf/2;
 %% Nearest Neighbor Interpolation structure -> flow
 HsfNN = zeros(Nf, Ns);
 for i=1:Nf
-    % IMPLEMENT HERE:
-    % Create boolean matrix: find the closest structure point j for each
-    % fluid mesh point i:
+    % Find the closest structure point j for each fluid mesh point i
+    [~, j] = min((Xf(i,1) - Xs(:,1)).^2 + (Xf(i,2) - Xs(:,2)).^2);
     HsfNN(i,j) = 1;
 end
 
 %% Nearest Neighbor Interpolation flow -> structure
 HfsNN = zeros(Ns, Nf);
 for i=1:Ns
-    % IMPLEMENT HERE:
-    % Create boolean matrix: find the closest fluid point j for each
-    % structure mesh point i: 
+    % Find the closest fluid point j for each structure mesh point i: 
+    [~, j] = min((Xs(i,1) - Xf(:,1)).^2 + (Xs(i,2) - Xf(:,2)).^2);
     HfsNN(i,j) = 1;
 end
-
 
 %% RBF interpolation structure -> flow
 PHI = zeros(Ns);
@@ -78,16 +75,19 @@ P   = zeros(Ns,3);
 % PHI is the RBF matrix
 % P is the matrix for the linear polynomial
 
-% IMPLEMENT HERE:
-% Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
 
-% IMPLEMENT HERE:
+% Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+P = [ones(Ns,1) Xs(:,1) Xs(:,2)];
+
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
 for i=1:Ns
     for j=1:Ns
-
-        PHI(i,j) = 
-    
+        d = sqrt((Xs(i,1)-Xs(j,1))^2 + (Xs(i,2)-Xs(j,2))^2);
+        if d <= 1
+            PHI(i,j) = (1-d)^4 * (4*d+1);
+        else
+            PHI(i,j) = 0;
+        end
     end
 end
 
@@ -105,16 +105,18 @@ P   = zeros(Nf,3);
 % PHI is the RBF matrix
 % P is the matrix for the linear polynomial
 
-% IMPLEMENT HERE:
 % Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+P = [ones(Nf,1) Xf(:,1) Xf(:,2)];
 
-% IMPLEMENT HERE:
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
 for i=1:Nf
     for j=1:Ns
-
-        PHI(i,j) = 
-    
+        d = sqrt((Xf(i,1)-Xs(j,1))^2 + (Xf(i,2)-Xs(j,2))^2);
+        if d <= 1
+            PHI(i,j) = (1-d)^4 * (4*d+1);
+        else
+            PHI(i,j) = 0;
+        end
     end
 end
 
@@ -134,16 +136,18 @@ P   = zeros(Nf,3);
 % PHI is the RBF matrix
 % P is the matrix for the linear polynomial
 
-% IMPLEMENT HERE:
 % Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+P = [ones(Nf,1) Xf(:,1) Xf(:,2)];
 
-% IMPLEMENT HERE:
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
 for i=1:Nf
     for j=1:Nf
-
-        PHI(i,j) = 
-    
+        d = sqrt((Xf(i,1)-Xf(j,1))^2 + (Xf(i,2)-Xf(j,2))^2);
+        if d <= 1
+            PHI(i,j) = (1-d)^4 * (4*d+1);
+        else
+            PHI(i,j) = 0;
+        end
     end
 end
 
@@ -161,16 +165,18 @@ P   = zeros(Ns,3);
 % PHI is the RBF matrix
 % P is the matrix for the linear polynomial
 
-% IMPLEMENT HERE:
 % Define the polynomial matrix P = [1 x1 y1 ; 1 x2 y2 ; ... ]
+P = [ones(Ns,1) Xs(:,1) Xs(:,2)];
 
-% IMPLEMENT HERE:
 % Define the RBF matrix PHI(i,j) = phi(|| x_i - x_j ||)
 for i=1:Ns
     for j=1:Nf
-
-        PHI(i,j) = 
-        
+        d = sqrt((Xs(i,1)-Xf(j,1))^2 + (Xs(i,2)-Xf(j,2))^2);
+        if d <= 1
+            PHI(i,j) = (1-d)^4 * (4*d+1);
+        else
+            PHI(i,j) = 0;
+        end
     end
 end
 
@@ -234,8 +240,8 @@ err_Ps_RBF = norm(interp1(Xs(:,1),Ps_RBF,Xi,'linear')-Df_ex)/sqrt(Nfine);
 % Ff = Mf * Pf
 % Df =  H * Ds
 % One obtains: Ps = .... * Pf
-Ps_NN_cv  = 
-Ps_RBF_cv = 
+Ps_NN_cv  = Ms \ (HsfNN' * Mf * Pf);
+Ps_RBF_cv = Ms \ (HsfRBF' * Mf * Pf);
 Pf_ex     = sin(2*pi*Xi);
 
 %% Show pressures
