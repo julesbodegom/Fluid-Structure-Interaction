@@ -89,11 +89,11 @@ for method = 1:3
             rho = (L\(dx_tn.*rho_tn)')';
             
             % Accumulate error for epsilon_2 (Exact solution is exactly 1)
-            sum_sq_err = sum_sq_err + sum((rho - 1).^2);
+            sum_sq_err = sum_sq_err + sum((rho - rho0).^2);
         end
 
         % Compute final errors for this dt
-        err1_array(k_idx) = sqrt( sum((rho - 1).^2) / N );
+        err1_array(k_idx) = sqrt( sum((rho - rho0).^2) / N );
         err2_array(k_idx) = sqrt( sum_sq_err / (N * M) );
     end
 
