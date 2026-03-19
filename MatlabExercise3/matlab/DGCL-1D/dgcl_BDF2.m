@@ -11,7 +11,7 @@ fmt = 'b-';     % linecolor for plot of final solution
 
 show_sol = 1;   % (=1) show intermediate solutions during simulation
 
-method = 1;     % method = 1 : exact at t(n+1)
+method = 3;     % method = 1 : exact at t(n+1)
                 % method = 2 : exact at t(n+1/2)
                 % method = 3 : DGCL
 if (method == 1)
@@ -68,9 +68,13 @@ for t=dt:dt:tend
   
   dxidt_exnp1   = 2*pi*A_m*cos(2*pi*(t))*sin(2*pi*xi0);         % exact face velocity at tn+1
   dxidt_exnp1_2 = 2*pi*A_m*cos(2*pi*(t-dt/2))*sin(2*pi*xi0);    % exact face velocity at tn+1/2
-
+  dxidt_exnp1_3 = 2*pi*A_m*cos(2*pi*(t-2*dt))*sin(2*pi*xi0);    % exact face velocity at tn+1/2
   %% IMPLEMENTATION OF DGCL
-  dxidt_dgcl    =                                               % face velocity satisfying D-GCL
+  if (t == dt)
+    dxidt_dgcl = (xi - xi_tn) / dt;  % BE for first step
+  else
+    dxidt_dgcl    =  (1.5*xi - 2*xi_tn + 0.5*xi_tnm1) / dt;                                         
+  end
   %%
 
   if (method == 1)
