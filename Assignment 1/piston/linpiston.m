@@ -18,7 +18,7 @@ Ndt   = 100;
 %   theta = 0   : first order explicit Euler
 %   theta = 1/2 : second order trapezoidal rule
 %   theta = 1   : first order implicit Euler
-theta = 1;
+theta = 0.0;
 
 % spatial discretization:
 % 
@@ -157,3 +157,5 @@ plot(tvec,evec);
 legend('Exact','Monolithic','Sequential S->F','Sequential F->S','Parallel','Location','Best');
 xlabel('Time');
 ylabel('System energy change');
+ylim([-10 100000])
+
