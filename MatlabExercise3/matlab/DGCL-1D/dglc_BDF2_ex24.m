@@ -23,7 +23,7 @@ set(gca, 'XScale', 'log', 'YScale', 'log'); % Ensure log-log axes
 grid on;
 
 %% Outer loop for the 3 methods
-for method = 3
+for method = 1:3
     
     % Arrays to store the computed errors for this method
     err1_array = zeros(1, length(k_vals));
@@ -136,10 +136,10 @@ for method = 3
     c = colors{method};
     
     % Epsilon 1: Solid line with circle markers
-    plot(dt_array, err1_array, [c '-o'], 'DisplayName', ['BDF2 scheme' ' (\epsilon_1)'], 'LineWidth', 1.5);
+    plot(dt_array, err1_array, [c '-o'], 'DisplayName', ['Method ' num2str(method) ' (\epsilon_1)'], 'LineWidth', 1.5);
     
     % Epsilon 2: Dotted line with square markers
-    plot(dt_array, err2_array, [c ':s'], 'DisplayName', ['BDF2 scheme' ' (\epsilon_2)'], 'LineWidth', 1.5);
+    plot(dt_array, err2_array, [c ':s'], 'DisplayName', ['Method ' num2str(method) ' (\epsilon_2)'], 'LineWidth', 1.5);
     
 end
 
